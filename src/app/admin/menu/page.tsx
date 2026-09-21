@@ -1,2 +1,4 @@
-import {Admin} from '@/components/admin';
-export default function Page(){return <Admin tab="menu"/>;}
+import { Admin } from "@/components/admin";
+export default function Page() {
+  return <Admin tab="menu" />;
+}

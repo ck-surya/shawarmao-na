@@ -5,7 +5,7 @@ Local development implementation of the supplied direct-ordering brief. Node 24+
 ## Run
 
 ```sh
-npm install
+npm ci
 cp .env.example .env.local
 # Set ADMIN_PASSWORD to a random password with at least 16 characters.
 npm run dev
@@ -22,7 +22,12 @@ npm run typecheck
 npm test
 npm run build
 npm run test:e2e
+npm run format:check
 ```
+
+The browser suite uses an isolated temporary database and build directory on port 3100. It uses `/usr/bin/google-chrome` by default; set `CHROME_PATH` to your Chromium executable on other systems. Test-only fixtures and a fixed business-hours clock never enter the normal app database or production runtime. The Next.js Date-extension warning in this test server comes from that fixed clock; cache components are not enabled. Screenshots are written to `test-results/`.
+
+Set `APP_ORIGIN` to the canonical HTTPS origin behind a reverse proxy. Serve production over HTTPS for secure staff session cookies.
 
 ## Architecture and launch boundary
 

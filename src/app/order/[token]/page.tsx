@@ -1,3 +1,12 @@
-import {Tracking} from '@/components/tracking';
-export const metadata={title:'Your order',robots:{index:false,follow:false}};
-export default async function Page({params}:{params:Promise<{token:string}>}){return <Tracking token={(await params).token}/>;}
+import { Tracking } from "@/components/tracking";
+export const metadata = {
+  title: "Your order",
+  robots: { index: false, follow: false },
+};
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ token: string }>;
+}) {
+  return <Tracking token={(await params).token} />;
+}
