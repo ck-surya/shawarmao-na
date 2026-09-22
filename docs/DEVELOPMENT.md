@@ -45,3 +45,10 @@ This is a working local MVP, not a production launch. Real menu/prices/photos, b
 - Cards clearly label representative art as “Dish illustration”. Staff-supplied photos take priority; fallbacks also check the dish name to avoid incorrect artwork after a rename. No database values or staff edits are overwritten.
 - Adjusted menu cards to compact image-and-text layouts, two columns on desktop and one on mobile. Added responsive Next.js image delivery, intrinsic dimensions and deferred loading below the first menu row.
 - Validation: TypeScript and all three existing browser scenarios passed; checked image-file mappings and photo precedence; reviewed mobile and desktop screenshots. Final production build checked before commit.
+
+## Complete menu imagery
+
+- Added 12 more built-in imagegen illustrations for the remaining 16 menu entries. All 23 dishes now have matching visuals across 18 distinct local WebP assets.
+- Added separate images for paneer/falafel wraps, hummus with falafel, chicken/paneer platters, doner chicken bowl, fried/peri-peri/kurkure/wheat momos, peri-peri fries and vegetable spring rolls.
+- Kept existing assets and staff-photo precedence. Final prompts and saved file paths are recorded in DISH_IMAGES.md.
+- Verified all 23 images successfully decode in the actual running storefront, checked horizontal overflow at 320, 375, 390, 430, 768, 1024 and 1440 px, and reviewed desktop Signature Lebanese and mobile Momos screenshots. TypeScript passed.
