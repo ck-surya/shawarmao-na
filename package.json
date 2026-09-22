@@ -10,7 +10,8 @@
     "test": "node --import tsx --test --test-isolation=none tests/*.test.ts",
     "test:e2e": "playwright test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "menu:import": "node --env-file-if-exists=.env.local --import tsx scripts/import-menu.ts"
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.3.0",
