@@ -71,3 +71,9 @@ This is a working local MVP, not a production launch. Real menu/prices/photos, b
 - Added authenticated multipart menu saves with origin checks, bounded request/file sizes, decoded-format and pixel-limit validation, automatic orientation, resizing and metadata removal. JPEG/PNG/WebP inputs up to 10 MB and 50 megapixels are stored as WebP under generated filenames.
 - Photos persist under `data/uploads` by default (alongside the configured SQLite database); `MENU_UPLOAD_DIR` can select another persistent directory. A runtime image route serves new files immediately, including after production builds. Failed menu persistence rolls back the new file; old photo files are retained for existing URLs.
 - Validation: 12 unit/persistence tests, 4 browser scenarios, TypeScript and production build passed. Browser coverage includes unauthorized/cross-origin/invalid uploads, preview, retry, customer image decoding, replacement and removal. Reviewed the mobile screenshot, verified the picker through the actual ngrok staff page, and tested production upload plus image delivery after a server restart using isolated data.
+
+## Extension attribute hydration warning
+
+- Reproduced the reported warning by injecting `data-qb-installed` on HTML and `data-new-gr-c-s-check-loaded` / `data-gr-ext-installed` on BODY before React hydrated the staff page.
+- Applied React's element-scoped `suppressHydrationWarning` to the two document elements only, following the [React hydration guidance](https://react.dev/reference/react-dom/client/hydrateRoot#suppressing-unavoidable-hydration-mismatch-errors). App descendants retain normal mismatch diagnostics.
+- Verified clean and simulated-extension sessions produce no hydration warnings and the staff form/bag remain interactive. A deliberate mismatch on MAIN still produces a warning. TypeScript and formatting checks passed.

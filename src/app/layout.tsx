@@ -20,8 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-scroll-behavior="smooth">
-      <body>
+    // Browser extensions add attributes to these two document elements before
+    // React hydrates. Keep suppression here so app content is still checked.
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <StoreProvider>
           <a className="skip-link" href="#main">
             Skip to content
