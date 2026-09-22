@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   isOpen,
+  calculateTotals,
   nextStates,
   orderSchema,
   calculateItems,
@@ -73,4 +74,17 @@ test("checkout rejects client prices, fractional quantities and missing delivery
     orderSchema.safeParse({ ...input, items: [{ id, quantity: 1.5 }] }).success,
     false,
   );
+});
+
+test("menu GST is rounded to paise once and kept separate from delivery", () => {
+  assert.deepEqual(calculateTotals(19000, 0, 500), {
+    subtotal: 19000,
+    deliveryFee: 0,
+    taxRateBps: 500,
+    tax: 950,
+    total: 19950,
+  });
+  assert.equal(calculateTotals(10010, 2500, 500).tax, 501);
+  assert.equal(calculateTotals(10010, 2500, 500).total, 13011);
+  assert.equal(calculateTotals(10010, 0, 0).total, 10010);
 });

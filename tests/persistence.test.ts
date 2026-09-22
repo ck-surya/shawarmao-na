@@ -47,7 +47,9 @@ test("transactional order persistence, idempotency, private tracking, and audite
   assert.equal(createOrder(request, open).token, result.token);
   assert.equal(listOrders().length, 1);
   const order = findOrder(result.token);
-  assert.equal(order.total, 20000);
+  assert.equal(order.total, 21000);
+  assert.equal(order.tax, 1000);
+  assert.equal(order.taxRateBps, 500);
   assert.equal(order.paymentStatus, "unpaid");
   assert.equal("phone" in order, false);
   assert.equal("name" in order, false);
@@ -77,7 +79,7 @@ test("delivery fee, unavailable items, closed hours, and disabled ordering enfor
   };
   const order = findOrder(createOrder(delivery, open).token);
   assert.equal(order.deliveryFee, 2500);
-  assert.equal(order.total, 22500);
+  assert.equal(order.total, 23500);
   saveMenu({ ...item, available: false });
   assert.throws(() => createOrder(input(), open), /no longer available/);
   saveMenu(item);
@@ -94,6 +96,20 @@ test("delivery fee, unavailable items, closed hours, and disabled ordering enfor
     /Delivery is not available/,
   );
   assert.equal(listOrders().length, 2);
+});
+test("legacy order snapshots retain original totals without retroactive GST", () => {
+  const existing = listOrders()[0];
+  const { tax, taxRateBps, ...legacy } = existing;
+  void tax;
+  void taxRateBps;
+  const originalTotal = legacy.total;
+  db()
+    .prepare("UPDATE orders SET data=? WHERE id=?")
+    .run(JSON.stringify(legacy), legacy.id);
+  const restored = listOrders().find((order) => order.id === legacy.id)!;
+  assert.equal(restored.tax, 0);
+  assert.equal(restored.taxRateBps, 0);
+  assert.equal(restored.total, originalTotal);
 });
 test("rate limits stop repeated attempts", () => {
   rateLimit("test", 1, 60000);

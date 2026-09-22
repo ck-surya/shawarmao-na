@@ -13,6 +13,7 @@ type Catalog = {
   orderingEnabled: boolean;
   deliveryEnabled: boolean;
   deliveryFee: number | null;
+  taxRateBps: number;
 };
 type CartLine = { id: string; quantity: number };
 type Store = {
@@ -46,6 +47,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     orderingEnabled: false,
     deliveryEnabled: false,
     deliveryFee: null,
+    taxRateBps: 0,
   });
   const [cart, setCart] = useState<CartLine[]>([]),
     [ready, setReady] = useState(false),

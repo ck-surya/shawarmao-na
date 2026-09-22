@@ -8,12 +8,13 @@ Local development implementation of the supplied direct-ordering brief. Node 24+
 npm ci
 cp .env.example .env.local
 # Set ADMIN_PASSWORD to a random password with at least 16 characters.
+npm run menu:import
 npm run dev
 ```
 
-Visit http://localhost:3000 and /admin. Add owner-approved menu items in the staff menu editor. No invented menu, prices, photos, or promotions are seeded. Place approved images under public/images and enter their /images/... paths.
+Visit http://localhost:3000 and /admin. The supplied Google Maps menu is available through `npm run menu:import`: 23 entries across three categories, including separate chicken/veg momo prices. Re-running the import preserves staff edits. See [the transcription and source](docs/MENU_SOURCE.md). Add or edit items in the staff menu editor. No descriptions, photos, or promotions are invented. Place approved images under public/images and enter their /images/... paths.
 
-Ordering starts disabled. Only enable ORDERING_ENABLED after verifying business details, menu, policies and fulfillment. Delivery additionally requires DELIVERY_ENABLED and an explicit DELIVERY_FEE_PAISE. Restart after changing environment values. All money is integer paise. Hours use Asia/Kolkata, noon inclusive to 5 AM exclusive.
+Ordering starts disabled. Only enable ORDERING_ENABLED after verifying business details, menu, policies and fulfillment. Delivery additionally requires DELIVERY_ENABLED and an explicit DELIVERY_FEE_PAISE. Restart after changing environment values. All money is integer paise. The supplied menu states 5% GST extra; it is calculated on the food subtotal, shown separately, and saved with each order. Existing orders retain their original totals. Hours use Asia/Kolkata, noon inclusive to 5 AM exclusive.
 
 ## Validation
 

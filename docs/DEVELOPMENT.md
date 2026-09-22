@@ -28,3 +28,12 @@
 ## Remaining launch work
 
 This is a working local MVP, not a production launch. Real menu/prices/photos, business/contact verification, delivery service area and process, approved policies, production authentication/rate limiting, backups, retention, hosting and domain setup remain. Online payments and notifications are not implemented. Ordering defaults to disabled; no fictional menu is seeded. Staff setup is documented in README.md.
+
+## Supplied menu update
+
+- Imported the user-supplied Google Maps menu: 8 Signature Lebanese items, 10 momo variants and 5 Indulgences. Exact transcription and reference image are in MENU_SOURCE.md and references/.
+- Added a repeatable, transactional import with stable IDs that preserves all existing staff edits. Imported 23 items into the local development database.
+- Added the printed 5% GST extra to the bag, checkout, server totals, staff order details and tracking. Saved order tax snapshots and preserved legacy totals.
+- Did not infer ingredients, portion counts or unlabelled dietary claims. The original photo is retained as development evidence, not republished as product photography.
+- Validation: 10 domain/persistence/import tests and 3 browser scenarios pass, including populated menu layout checks at 320–1440 px and ₹190 + ₹9.50 GST = ₹199.50. Mobile screenshot reviewed.
+- Current stock/prices and delivery tax treatment still need confirmation before launch. Ordering remains disabled by default.

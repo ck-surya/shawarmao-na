@@ -1,3 +1,4 @@
+import sourceMenu from "../../src/content/restaurant-menu.json";
 import { test, expect } from "@playwright/test";
 const origin = "http://127.0.0.1:3100";
 const password = "test-only-staff-password-1234";
@@ -125,7 +126,8 @@ test("staff menu setup, guest pickup, persisted tracking, status progression and
   ).toBeVisible();
   const token = shop.url().split("/").pop();
   const order = await (await request.get(`/api/order/${token}`)).json();
-  expect(order.total).toBe(12500);
+  expect(order.total).toBe(13125);
+  expect(order.tax).toBe(625);
   expect(order.phone).toBeUndefined();
   expect(order.address).toBeUndefined();
   await shop.reload();
@@ -168,7 +170,7 @@ test("staff menu setup, guest pickup, persisted tracking, status progression and
   const delivery = await (
     await request.get(`/api/order/${results[0].token}`)
   ).json();
-  expect(delivery.total).toBe(27500);
+  expect(delivery.total).toBe(28750);
   expect(delivery.deliveryFee).toBe(2500);
   await page.getByRole("link", { name: "Menu", exact: true }).click();
   await page.getByLabel("Availability of TEST ONLY wrap").click();
@@ -189,4 +191,81 @@ test("staff menu setup, guest pickup, persisted tracking, status progression and
   ).toBeVisible();
   expect((await page.request.get("/api/admin/menu")).status()).toBe(401);
   await customer.close();
+});
+
+test("supplied menu categories, momo variants and GST totals render on mobile and desktop", async ({
+  page,
+}) => {
+  expect(
+    (
+      await page.request.post("/api/admin/session", {
+        headers: { Origin: origin },
+        data: { password },
+      })
+    ).ok(),
+  ).toBeTruthy();
+  for (const item of sourceMenu.items) {
+    expect(
+      (
+        await page.request.post("/api/admin/menu", {
+          headers: { Origin: origin },
+          data: item,
+        })
+      ).ok(),
+    ).toBeTruthy();
+  }
+  await page.goto("/menu");
+  await expect(
+    page.getByRole("heading", { name: "Chicken Shawarma", exact: true }),
+  ).toBeVisible();
+  for (const width of [320, 375, 390, 430, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    ).toBeTruthy();
+  }
+  await page
+    .getByRole("button", { name: "Momos for the Soul", exact: true })
+    .click();
+  await expect(page.locator("article")).toHaveCount(10);
+  await expect(
+    page.locator("article").filter({
+      has: page.getByRole("heading", {
+        name: "Steam Momos (Chicken)",
+        exact: true,
+      }),
+    }),
+  ).toContainText("₹150");
+  await expect(
+    page.locator("article").filter({
+      has: page.getByRole("heading", {
+        name: "Steam Momos (Veg)",
+        exact: true,
+      }),
+    }),
+  ).toContainText("₹120");
+  await page
+    .getByRole("button", { name: "Signature Lebanese", exact: true })
+    .click();
+  await expect(page.locator("article")).toHaveCount(8);
+  await page.screenshot({
+    path: "test-results/supplied-menu-desktop.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({
+    path: "test-results/supplied-menu-mobile.png",
+    fullPage: true,
+  });
+  await page
+    .getByRole("button", { name: "Add Chicken Shawarma", exact: true })
+    .click();
+  await page.getByRole("button", { name: /Open bag/ }).click();
+  await expect(page.getByRole("dialog")).toContainText("₹199.50");
+  await page.getByRole("link", { name: "Continue to checkout" }).click();
+  await expect(page.locator("aside")).toContainText("GST (5%)");
+  await expect(page.locator("aside")).toContainText("₹9.50");
+  await expect(page.locator("aside")).toContainText("₹199.50");
 });

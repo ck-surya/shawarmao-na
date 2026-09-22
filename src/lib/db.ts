@@ -1,3 +1,4 @@
+import menuSource from "../content/restaurant-menu.json";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -5,6 +6,7 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import {
   AppError,
   calculateItems,
+  calculateTotals,
   isOpen,
   nextStates,
   type MenuItem,
@@ -50,6 +52,7 @@ export function settings() {
   const fee = process.env.DELIVERY_FEE_PAISE;
   return {
     orderingEnabled: process.env.ORDERING_ENABLED === "true",
+    taxRateBps: menuSource.taxRateBps,
     deliveryEnabled:
       process.env.DELIVERY_ENABLED === "true" &&
       !!fee &&
@@ -117,9 +120,7 @@ export function createOrder(input: OrderInput, clock = new Date()) {
       phone: input.phone,
       address: input.fulfillment === "delivery" ? input.address : "",
       notes: input.notes,
-      subtotal,
-      deliveryFee,
-      total: subtotal + deliveryFee,
+      ...calculateTotals(subtotal, deliveryFee, config.taxRateBps),
       paymentStatus: "unpaid",
       createdAt: now,
       items,
@@ -144,7 +145,7 @@ export function createOrder(input: OrderInput, clock = new Date()) {
   });
 }
 function hydrate(row: { data: string }): Order {
-  const order: Order = JSON.parse(row.data);
+  const order: Order = { tax: 0, taxRateBps: 0, ...JSON.parse(row.data) };
   order.history = db()
     .prepare(
       "SELECT status,at FROM order_status_history WHERE order_id=? ORDER BY id",

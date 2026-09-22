@@ -106,6 +106,11 @@ export function Storefront({ menuOnly = false }: { menuOnly?: boolean }) {
             .
           </div>
         )}
+        {!loading && !error && catalog.taxRateBps > 0 && (
+          <p className="live-status">
+            Prices exclude {catalog.taxRateBps / 100}% GST, added at checkout.
+          </p>
+        )}
         <div className="menu-tools">
           <nav className="categories" aria-label="Menu categories">
             {categories.map((c) => (

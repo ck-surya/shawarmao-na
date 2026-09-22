@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState, type FormEvent } from "react";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { money, orderSchema } from "@/lib/domain";
+import { money, orderSchema, calculateTotals } from "@/lib/domain";
 import { request, useStore } from "./store";
 export function Checkout() {
   const {
@@ -32,6 +32,7 @@ export function Checkout() {
     0,
   );
   const fee = fulfillment === "delivery" ? catalog.deliveryFee || 0 : 0;
+  const totals = calculateTotals(subtotal, fee, catalog.taxRateBps);
   const unavailable = cart.some(
     (line) => !catalog.items.find((i) => i.id === line.id)?.available,
   );
@@ -246,9 +247,13 @@ export function Checkout() {
             <span>{fulfillment === "delivery" ? "Delivery" : "Pickup"}</span>
             <span>{money(fee)}</span>
           </div>
+          <div className="summary-line">
+            <span>GST ({catalog.taxRateBps / 100}%)</span>
+            <span>{money(totals.tax)}</span>
+          </div>
           <div className="total">
             <span>Total</span>
-            <strong>{money(subtotal + fee)}</strong>
+            <strong>{money(totals.total)}</strong>
           </div>
           <p className="muted">
             Prices and availability are checked again when you place your order.

@@ -276,6 +276,12 @@ function Orders() {
                     <span>{money(i.pricePaise * i.quantity)}</span>
                   </div>
                 ))}
+                {order.taxRateBps > 0 && (
+                  <p>
+                    GST ({order.taxRateBps / 100}%): {money(order.tax)}
+                  </p>
+                )}
+                <p>Delivery fee: {money(order.deliveryFee)}</p>
                 <p className="muted">Payment is not recorded as paid.</p>
                 <div className="order-actions">
                   {nextStates(order.status, order.fulfillment).map((status) => (

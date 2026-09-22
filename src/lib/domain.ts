@@ -118,6 +118,8 @@ export type Order = {
   notes: string;
   subtotal: number;
   deliveryFee: number;
+  taxRateBps: number;
+  tax: number;
   total: number;
   paymentStatus: "unpaid";
   createdAt: string;
@@ -151,4 +153,20 @@ export function calculateItems(lines: OrderInput["items"], menu: MenuItem[]) {
       quantity: line.quantity,
     };
   });
+}
+
+// Round GST once on the food subtotal, using integer paise and basis points.
+export function calculateTotals(
+  subtotal: number,
+  deliveryFee: number,
+  taxRateBps: number,
+) {
+  const tax = Math.round((subtotal * taxRateBps) / 10000);
+  return {
+    subtotal,
+    deliveryFee,
+    taxRateBps,
+    tax,
+    total: subtotal + tax + deliveryFee,
+  };
 }

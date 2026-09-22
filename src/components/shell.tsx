@@ -10,7 +10,7 @@ import {
   Phone,
   MapPin,
 } from "lucide-react";
-import { isOpen, money, restaurant } from "@/lib/domain";
+import { isOpen, money, restaurant, calculateTotals } from "@/lib/domain";
 import { useStore } from "./store";
 export function Quantity({
   id,
@@ -226,7 +226,23 @@ export function Bag() {
                 <span>Subtotal</span>
                 <strong>{money(subtotal)}</strong>
               </p>
-              <p className="muted">Pickup or delivery options at checkout.</p>
+              <p className="summary-line">
+                <span>GST ({catalog.taxRateBps / 100}%)</span>
+                <span>
+                  {money(calculateTotals(subtotal, 0, catalog.taxRateBps).tax)}
+                </span>
+              </p>
+              <p className="total">
+                <span>Including GST</span>
+                <strong>
+                  {money(
+                    calculateTotals(subtotal, 0, catalog.taxRateBps).total,
+                  )}
+                </strong>
+              </p>
+              <p className="muted">
+                Delivery charges, if applicable, are added at checkout.
+              </p>
               {invalid ? (
                 <p role="alert" className="error-text">
                   Review unavailable items before checkout.
@@ -261,7 +277,9 @@ export function FloatingBag() {
     <button className="floating-bag" onClick={() => setBagOpen(true)}>
       <ShoppingBag size={18} />
       <span>View bag · {cart.reduce((s, i) => s + i.quantity, 0)} items</span>
-      <strong>{money(subtotal)}</strong>
+      <strong>
+        {money(calculateTotals(subtotal, 0, catalog.taxRateBps).total)}
+      </strong>
     </button>
   );
 }

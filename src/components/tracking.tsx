@@ -150,6 +150,12 @@ export function Tracking({ token }: { token: string }) {
             <span>Delivery fee</span>
             <span>{money(order.deliveryFee)}</span>
           </div>
+          {order.taxRateBps > 0 && (
+            <div className="summary-line">
+              <span>GST ({order.taxRateBps / 100}%)</span>
+              <span>{money(order.tax)}</span>
+            </div>
+          )}
           <div className="total">
             <span>Total</span>
             <strong>{money(order.total)}</strong>
