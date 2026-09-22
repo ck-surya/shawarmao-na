@@ -1,6 +1,12 @@
 "use client";
 import Link from "next/link";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 import {
   money,
   nextStates,
@@ -321,6 +327,7 @@ function Orders() {
 }
 function MenuEditor() {
   const { refresh: refreshPublic } = useStore();
+  const formRef = useRef<HTMLFormElement>(null);
   const [items, setItems] = useState<MenuItem[]>([]),
     [editing, setEditing] = useState<MenuItem | null>(null),
     [error, setError] = useState(""),
@@ -333,6 +340,13 @@ function MenuEditor() {
   useEffect(() => {
     refresh().catch((e) => setError(e.message));
   }, [refresh]);
+  useEffect(() => {
+    if (!editing) return;
+    formRef.current?.scrollIntoView({ block: "start", behavior: "instant" });
+    formRef.current
+      ?.querySelector<HTMLInputElement>('input[name="name"]')
+      ?.focus({ preventScroll: true });
+  }, [editing, version]);
   async function save(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
@@ -399,51 +413,9 @@ function MenuEditor() {
         </p>
       )}
       <div className="admin-menu">
-        <section>
-          <h2 style={{ fontSize: 30 }}>Menu items</h2>
-          {items.length === 0 ? (
-            <div className="empty">
-              <h3>A fresh menu starts here.</h3>
-              <p>Add your first verified item using the form.</p>
-            </div>
-          ) : (
-            items.map((item) => (
-              <div className="menu-admin-item" key={item.id}>
-                <div>
-                  <h3>{item.name}</h3>
-                  <p>
-                    <small>
-                      {item.category} · {money(item.pricePaise)} ·{" "}
-                      {item.verified ? "Verified" : "Draft"}
-                    </small>
-                  </p>
-                  <button
-                    className="text-button"
-                    onClick={() => {
-                      setEditing(item);
-                      setVersion((v) => v + 1);
-                      setSuccess("");
-                    }}
-                  >
-                    Edit {item.name}
-                  </button>
-                </div>
-                <label className="checkbox">
-                  <input
-                    type="checkbox"
-                    disabled={busy}
-                    checked={item.available}
-                    onChange={() => void toggle(item)}
-                    aria-label={`Availability of ${item.name}`}
-                  />
-                  <span>Available</span>
-                </label>
-              </div>
-            ))
-          )}
-        </section>
         <form
-          className="form"
+          className="form menu-editor-form"
+          ref={formRef}
           key={`${editing?.id || "new"}-${version}`}
           onSubmit={save}
         >
@@ -542,6 +514,49 @@ function MenuEditor() {
             </button>
           )}
         </form>
+        <section>
+          <h2 style={{ fontSize: 30 }}>Menu items</h2>
+          {items.length === 0 ? (
+            <div className="empty">
+              <h3>A fresh menu starts here.</h3>
+              <p>Add your first verified item using the form.</p>
+            </div>
+          ) : (
+            items.map((item) => (
+              <div className="menu-admin-item" key={item.id}>
+                <div>
+                  <h3>{item.name}</h3>
+                  <p>
+                    <small>
+                      {item.category} · {money(item.pricePaise)} ·{" "}
+                      {item.verified ? "Verified" : "Draft"}
+                    </small>
+                  </p>
+                  <button
+                    className="text-button"
+                    onClick={() => {
+                      setEditing(item);
+                      setVersion((v) => v + 1);
+                      setSuccess("");
+                    }}
+                  >
+                    Edit {item.name}
+                  </button>
+                </div>
+                <label className="checkbox">
+                  <input
+                    type="checkbox"
+                    disabled={busy}
+                    checked={item.available}
+                    onChange={() => void toggle(item)}
+                    aria-label={`Availability of ${item.name}`}
+                  />
+                  <span>Available</span>
+                </label>
+              </div>
+            ))
+          )}
+        </section>
       </div>
     </>
   );

@@ -52,3 +52,9 @@ This is a working local MVP, not a production launch. Real menu/prices/photos, b
 - Added separate images for paneer/falafel wraps, hummus with falafel, chicken/paneer platters, doner chicken bowl, fried/peri-peri/kurkure/wheat momos, peri-peri fries and vegetable spring rolls.
 - Kept existing assets and staff-photo precedence. Final prompts and saved file paths are recorded in DISH_IMAGES.md.
 - Verified all 23 images successfully decode in the actual running storefront, checked horizontal overflow at 320, 375, 390, 430, 768, 1024 and 1440 px, and reviewed desktop Signature Lebanese and mobile Momos screenshots. TypeScript passed.
+
+## Staff menu form layout fix
+
+- Prevented the editor from stretching to match the entire menu list. With 23 items, the form previously grew to about 2,989 px and the name input to 154 px; fields now retain their natural height (about 47 px for the name input).
+- Moved the form before the list in both visual and keyboard order: left column on desktop, above the list on mobile. Selecting Edit scrolls to the form below the sticky header and focuses the item name.
+- Checked the populated staff page at 320, 390, 600, 768, 1024 and 1440 px with no horizontal overflow; reviewed desktop/mobile screenshots and verified edit focus, scrolling, cancellation and sign-out. Existing three browser scenarios, TypeScript and production build passed. Save verification used the isolated test database.
