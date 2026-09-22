@@ -12,7 +12,9 @@ npm run menu:import
 npm run dev
 ```
 
-Visit http://localhost:3000 and /admin. The supplied Google Maps menu is available through `npm run menu:import`: 23 entries across three categories, including separate chicken/veg momo prices. Re-running the import preserves staff edits. See [the transcription and source](docs/MENU_SOURCE.md). Add or edit items in the staff menu editor. No descriptions, photos, or promotions are invented. Place approved images under public/images and enter their /images/... paths.
+Visit http://localhost:3000 and /admin. The supplied Google Maps menu is available through `npm run menu:import`: 23 entries across three categories, including separate chicken/veg momo prices. Re-running the import preserves staff edits. See [the transcription and source](docs/MENU_SOURCE.md). Add or edit items in the staff menu editor. Use **Menu photo** to choose an image from a phone or computer, preview it, then select **Save item** to upload it. JPG, PNG and WebP files up to 10 MB and 50 megapixels are supported; export HEIC photos as JPG first. Existing photos can be replaced or removed from the menu item.
+
+Uploaded photos are validated, automatically oriented, resized to fit within 1600 × 1600, and saved as WebP without embedded metadata using [Sharp](https://sharp.pixelplumbing.com/api-output/). Files live in an `uploads/` directory alongside `DATABASE_PATH` (`data/uploads` by default), or in `MENU_UPLOAD_DIR` if configured. They are served through `/images/uploads/<generated-name>.webp`, including files added after a production build. Back up this directory together with the database and retain it across deploys. Replaced/removed photos remain on disk to preserve existing URLs; removing a photo detaches it from the item. Failed database saves roll back the new file. Staff-uploaded photos take precedence over built-in illustrations.
 
 Ordering starts disabled. Only enable ORDERING_ENABLED after verifying business details, menu, policies and fulfillment. Delivery additionally requires DELIVERY_ENABLED and an explicit DELIVERY_FEE_PAISE. Restart after changing environment values. All money is integer paise. The supplied menu states 5% GST extra; it is calculated on the food subtotal, shown separately, and saved with each order. Existing orders retain their original totals. Hours use Asia/Kolkata, noon inclusive to 5 AM exclusive.
 
@@ -26,7 +28,7 @@ npm run test:e2e
 npm run format:check
 ```
 
-The browser suite uses an isolated temporary database and build directory on port 3100. It uses `/usr/bin/google-chrome` by default; set `CHROME_PATH` to your Chromium executable on other systems. Test-only fixtures and a fixed business-hours clock never enter the normal app database or production runtime. The Next.js Date-extension warning in this test server comes from that fixed clock; cache components are not enabled. Screenshots are written to `test-results/`.
+The browser suite uses an isolated temporary database, upload directory and build directory on port 3100. It uses `/usr/bin/google-chrome` by default; set `CHROME_PATH` to your Chromium executable on other systems. Test-only fixtures and a fixed business-hours clock never enter the normal app database or production runtime. The Next.js Date-extension warning in this test server comes from that fixed clock; cache components are not enabled. Screenshots are written to `test-results/`.
 
 Set `APP_ORIGIN` to the canonical HTTPS origin behind a reverse proxy. Serve production over HTTPS for secure staff session cookies.
 

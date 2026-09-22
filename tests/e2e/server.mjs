@@ -18,6 +18,8 @@ const child = spawn(
     env: {
       ...process.env,
       DATABASE_PATH: join(directory, "test.sqlite"),
+      MENU_UPLOAD_DIR: join(directory, "uploads"),
+      APP_ORIGIN: "http://127.0.0.1:3100",
       NEXT_DIST_DIR: ".next-e2e",
       ADMIN_PASSWORD: "test-only-staff-password-1234",
       ORDERING_ENABLED: "true",

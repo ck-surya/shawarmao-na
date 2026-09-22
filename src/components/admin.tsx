@@ -16,6 +16,7 @@ import {
   type Status,
 } from "@/lib/domain";
 import { request, useStore } from "./store";
+import { MenuPhotoField } from "./menu-photo-field";
 export function Admin({
   tab = "orders",
 }: {
@@ -365,9 +366,16 @@ function MenuEditor() {
       verified: form.get("verified") === "on",
     };
     try {
+      const photo = form.get("photo");
+      const upload = new FormData();
+      const hasPhoto = photo instanceof File && photo.size > 0;
+      if (hasPhoto) {
+        upload.set("item", JSON.stringify(data));
+        upload.set("photo", photo);
+      }
       await request("/api/admin/menu", {
         method: "POST",
-        body: JSON.stringify(data),
+        body: hasPhoto ? upload : JSON.stringify(data),
       });
       setEditing(null);
       setVersion((v) => v + 1);
@@ -473,15 +481,7 @@ function MenuEditor() {
               <option value="non-veg">Verified non-vegetarian</option>
             </select>
           </label>
-          <label className="field">
-            Photo path{" "}
-            <small>Optional. Use an approved file under /images/.</small>
-            <input
-              name="image"
-              defaultValue={editing?.image || ""}
-              placeholder="/images/item.webp"
-            />
-          </label>
+          <MenuPhotoField image={editing?.image || ""} disabled={busy} />
           <label className="checkbox">
             <input
               name="available"
@@ -505,6 +505,7 @@ function MenuEditor() {
             <button
               className="text-button"
               type="button"
+              disabled={busy}
               onClick={() => {
                 setEditing(null);
                 setVersion((v) => v + 1);
@@ -534,6 +535,7 @@ function MenuEditor() {
                   </p>
                   <button
                     className="text-button"
+                    disabled={busy}
                     onClick={() => {
                       setEditing(item);
                       setVersion((v) => v + 1);
