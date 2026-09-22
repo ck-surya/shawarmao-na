@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
+import { dishImage } from "@/lib/dish-images";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -149,19 +151,33 @@ export function Storefront({ menuOnly = false }: { menuOnly?: boolean }) {
           </div>
         ) : items.length ? (
           <div className="menu-grid">
-            {items.map((item) => {
+            {items.map((item, index) => {
+              const photo = dishImage(item);
               const quantity =
                 cart.find((i) => i.id === item.id)?.quantity || 0;
               return (
-                <article className="menu-card" key={item.id}>
-                  {item.image && (
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      width={480}
-                      height={360}
-                      loading="lazy"
-                    />
+                <article
+                  className={`menu-card${photo ? " has-dish-image" : ""}`}
+                  key={item.id}
+                >
+                  {photo && (
+                    <figure className="dish-figure">
+                      <Image
+                        src={photo.src}
+                        alt={
+                          photo.illustration
+                            ? `Illustration of ${item.name}`
+                            : item.name
+                        }
+                        width={960}
+                        height={720}
+                        sizes="(max-width: 600px) 112px, 144px"
+                        loading={menuOnly && index < 2 ? "eager" : "lazy"}
+                      />
+                      {photo.illustration && (
+                        <figcaption>Dish illustration</figcaption>
+                      )}
+                    </figure>
                   )}
                   <div className="item-meta">
                     <span>{item.category}</span>

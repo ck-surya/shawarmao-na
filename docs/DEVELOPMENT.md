@@ -37,3 +37,11 @@ This is a working local MVP, not a production launch. Real menu/prices/photos, b
 - Did not infer ingredients, portion counts or unlabelled dietary claims. The original photo is retained as development evidence, not republished as product photography.
 - Validation: 10 domain/persistence/import tests and 3 browser scenarios pass, including populated menu layout checks at 320–1440 px and ₹190 + ₹9.50 GST = ₹199.50. Mobile screenshot reviewed.
 - Current stock/prices and delivery tax treatment still need confirmation before launch. Ordering remains disabled by default.
+
+## Dish image update
+
+- Added six original gouache-style dish illustrations to seven matching menu entries: Chicken Shawarma, Hummus - Pita, both Steam Momos variants, French Fries, Choco Lava Cake and Walnut Brownie.
+- Generated with the built-in imagegen tool; optimized and saved as local WebP assets under public/images/dishes. Final prompts and paths are recorded in DISH_IMAGES.md.
+- Cards clearly label representative art as “Dish illustration”. Staff-supplied photos take priority; fallbacks also check the dish name to avoid incorrect artwork after a rename. No database values or staff edits are overwritten.
+- Adjusted menu cards to compact image-and-text layouts, two columns on desktop and one on mobile. Added responsive Next.js image delivery, intrinsic dimensions and deferred loading below the first menu row.
+- Validation: TypeScript and all three existing browser scenarios passed; checked image-file mappings and photo precedence; reviewed mobile and desktop screenshots. Final production build checked before commit.

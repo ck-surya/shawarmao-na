@@ -396,13 +396,6 @@ small {
   flex-direction: column;
   min-width: 0;
 }
-.menu-card > img {
-  width: 100%;
-  height: 210px;
-  object-fit: cover;
-  border-radius: 3px;
-  margin-bottom: 16px;
-}
 .item-meta {
   display: flex;
   flex-wrap: wrap;
@@ -1084,9 +1077,6 @@ input[type="checkbox"] {
   .menu-grid {
     grid-template-columns: 1fr;
   }
-  .menu-card > img {
-    height: 230px;
-  }
   .notice {
     padding: 13px;
     font-size: 11px;
@@ -1202,5 +1192,69 @@ input[type="checkbox"] {
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+/* Compact dish artwork keeps menu browsing and add controls together. */
+.menu-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.menu-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto 1fr auto;
+  column-gap: 20px;
+  min-height: 190px;
+}
+.menu-card.has-dish-image {
+  grid-template-columns: minmax(0, 1fr) 144px;
+}
+.menu-card .item-meta {
+  grid-column: 1;
+  grid-row: 1;
+}
+.menu-card h3 {
+  grid-column: 1;
+  grid-row: 2;
+}
+.menu-card > p {
+  grid-column: 1;
+  grid-row: 3;
+}
+.menu-card .item-bottom {
+  grid-column: 1 / -1;
+  grid-row: 4;
+}
+.dish-figure {
+  grid-column: 2;
+  grid-row: 1 / 4;
+  margin: 12px 0 0;
+  align-self: center;
+}
+.dish-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.dish-figure figcaption {
+  font-size: 9px;
+  line-height: 1.4;
+  color: var(--muted);
+  text-align: right;
+  margin-top: 5px;
+}
+@media (max-width: 600px) {
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+  .menu-card {
+    column-gap: 16px;
+    min-height: 165px;
+  }
+  .menu-card.has-dish-image {
+    grid-template-columns: minmax(0, 1fr) 112px;
   }
 }
