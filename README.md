@@ -30,6 +30,8 @@ The browser suite uses an isolated temporary database and build directory on por
 
 Set `APP_ORIGIN` to the canonical HTTPS origin behind a reverse proxy. Serve production over HTTPS for secure staff session cookies.
 
+For an ngrok development preview, set `DEV_ALLOWED_ORIGINS` in `.env.local` to your tunnel hostname (for example, `your-tunnel.ngrok-free.app`, without `https://` or a port), then restart `npm run dev`. Multiple hostnames can be comma-separated. Next.js blocks the development live connection from unlisted hosts, which can leave the menu loading without images. Update this setting when the tunnel URL changes. Set `APP_ORIGIN` to the full HTTPS tunnel origin when testing staff or checkout submissions through that URL.
+
 ## Architecture and launch boundary
 
 `src/lib/domain.ts` owns input rules and transitions. `src/lib/db.ts` is a **local development SQLite adapter**, not a managed database integration. The user explicitly chose a standalone implementation. Native Next.js routes enforce access in handlers; Next does not support Hatchable's custom route export syntax. SQLite may be retained for a single persistent server or replaced with PostgreSQL before scaling.

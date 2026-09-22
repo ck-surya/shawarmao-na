@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 const config: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   poweredByHeader: false,
+  allowedDevOrigins: (process.env.DEV_ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((hostname) => hostname.trim())
+    .filter(Boolean),
   async headers() {
     return [
       {

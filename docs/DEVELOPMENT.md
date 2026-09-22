@@ -58,3 +58,9 @@ This is a working local MVP, not a production launch. Real menu/prices/photos, b
 - Prevented the editor from stretching to match the entire menu list. With 23 items, the form previously grew to about 2,989 px and the name input to 154 px; fields now retain their natural height (about 47 px for the name input).
 - Moved the form before the list in both visual and keyboard order: left column on desktop, above the list on mobile. Selecting Edit scrolls to the form below the sticky header and focuses the item name.
 - Checked the populated staff page at 320, 390, 600, 768, 1024 and 1440 px with no horizontal overflow; reviewed desktop/mobile screenshots and verified edit focus, scrolling, cancellation and sign-out. Existing three browser scenarios, TypeScript and production build passed. Save verification used the isolated test database.
+
+## Ngrok preview image loading
+
+- Reproduced the public menu remaining in its loading state while Next.js rejected the tunnel's development WebSocket connection. The menu API and both original and optimized image endpoints returned successfully.
+- Added the `DEV_ALLOWED_ORIGINS` environment setting for explicit development hostnames and configured the current tunnel in gitignored `.env.local`. Documented how to update it when the tunnel changes; no wildcard hosts are enabled by default.
+- Verified all 23 dish images decode through the public tunnel on desktop and mobile after passing the normal ngrok welcome screen, without special request headers. Reviewed the mobile screenshot. Confirmed the configured hostname is accepted and an unrelated origin receives 403. TypeScript and production build passed.
