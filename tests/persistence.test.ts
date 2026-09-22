@@ -97,6 +97,33 @@ test("delivery fee, unavailable items, closed hours, and disabled ordering enfor
   );
   assert.equal(listOrders().length, 2);
 });
+test("pickup orders reach staff and tracking with delivery disabled and no delivery fee configured", () => {
+  const previous = process.env.DELIVERY_ENABLED;
+  process.env.DELIVERY_ENABLED = "false";
+  try {
+    const result = createOrder(input(), open);
+    const order = findOrder(result.token);
+    assert.equal(order.fulfillment, "pickup");
+    assert.equal(order.status, "pending");
+    assert.equal(order.deliveryFee, 0);
+    assert.equal(order.total, 21000);
+    assert.ok(listOrders().some((entry) => entry.id === order.id));
+    assert.throws(
+      () =>
+        createOrder(
+          {
+            ...input(),
+            fulfillment: "delivery",
+            address: "Synthetic test address",
+          },
+          open,
+        ),
+      /Delivery is not available/,
+    );
+  } finally {
+    process.env.DELIVERY_ENABLED = previous;
+  }
+});
 test("legacy order snapshots retain original totals without retroactive GST", () => {
   const existing = listOrders()[0];
   const { tax, taxRateBps, ...legacy } = existing;

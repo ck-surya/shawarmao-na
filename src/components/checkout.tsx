@@ -142,6 +142,12 @@ export function Checkout() {
               {!catalog.deliveryEnabled && <small> · unavailable</small>}
             </label>
           </fieldset>
+          {catalog.orderingEnabled && !catalog.deliveryEnabled && (
+            <p className="notice">
+              Pickup orders are open. Submit your order here, wait for the
+              restaurant to confirm, then collect and pay at the restaurant.
+            </p>
+          )}
           <label className="field">
             Your name
             <input

@@ -77,3 +77,9 @@ This is a working local MVP, not a production launch. Real menu/prices/photos, b
 - Reproduced the reported warning by injecting `data-qb-installed` on HTML and `data-new-gr-c-s-check-loaded` / `data-gr-ext-installed` on BODY before React hydrated the staff page.
 - Applied React's element-scoped `suppressHydrationWarning` to the two document elements only, following the [React hydration guidance](https://react.dev/reference/react-dom/client/hydrateRoot#suppressing-unavoidable-hydration-mismatch-errors). App descendants retain normal mismatch diagnostics.
 - Verified clean and simulated-extension sessions produce no hydration warnings and the staff form/bag remain interactive. A deliberate mismatch on MAIN still produces a warning. TypeScript and formatting checks passed.
+
+## Pickup ordering enabled
+
+- Found the disabled Place order button was caused by `ORDERING_ENABLED=false`, independently of delivery. Enabled ordering in the current server's gitignored `.env.local` while retaining `DELIVERY_ENABLED=false`.
+- Added checkout guidance explaining pickup submission, restaurant confirmation and payment at collection. Clarified in staff Setup and README that pickup needs no delivery integration; new installations still default to ordering disabled.
+- Verified the public ngrok checkout selects pickup, disables delivery and enables Place order. No real restaurant order was submitted during verification. A persistence regression test confirms pickup reaches tracking and staff orders with no delivery fee configured while delivery requests are rejected. All 13 unit/persistence tests, 4 browser scenarios and TypeScript passed.

@@ -588,6 +588,11 @@ function Settings() {
         Configuration is managed on the server. Restart the application after
         changing environment settings.
       </div>
+      <p>
+        Pickup orders do not need a delivery integration. When online ordering
+        is enabled, customers can submit pickup orders and pay at the
+        restaurant. New orders appear in the Orders tab for staff confirmation.
+      </p>
       <h2>Before accepting orders</h2>
       <p>
         Verify the restaurant contact details, hours, menu, prices and photos.
