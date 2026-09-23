@@ -1,0 +1,8 @@
+# Replace this hostname with the hostname in APP_ORIGIN.
+orders.example.com {
+	encode zstd gzip
+	request_body {
+		max_size 11MB
+	}
+	reverse_proxy 127.0.0.1:3000
+}

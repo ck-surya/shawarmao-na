@@ -9,3 +9,6 @@ docs/0*.md
 .next-e2e
 
 next-env.d.ts
+
+outputs
+backups

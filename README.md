@@ -1,6 +1,8 @@
 # Shawarmao Na
 
-Local development implementation of the supplied direct-ordering brief. Node 24+, Next.js App Router, React, TypeScript, and a local SQLite persistence adapter. The user chose to skip the existing Hatchable implementation. This is a standalone application and does not modify that deployment.
+Standalone implementation of the supplied direct-ordering brief. Node 24, Next.js App Router, React, TypeScript, and SQLite persistence. The user chose to skip the existing Hatchable implementation. This is a standalone application and does not modify that deployment.
+
+The `deploy/stable` branch includes Docker packaging, persistent storage, health checks, startup validation and backup tooling. Follow [the deployment guide](docs/DEPLOYMENT.md) for the recommended Oracle Cloud Always Free VM setup. Hosting accounts, DNS and off-server backup storage still need to be configured.
 
 ## Run
 
@@ -36,10 +38,10 @@ For an ngrok development preview, set `DEV_ALLOWED_ORIGINS` in `.env.local` to y
 
 ## Architecture and launch boundary
 
-`src/lib/domain.ts` owns input rules and transitions. `src/lib/db.ts` is a **local development SQLite adapter**, not a managed database integration. The user explicitly chose a standalone implementation. Native Next.js routes enforce access in handlers; Next does not support Hatchable's custom route export syntax. SQLite may be retained for a single persistent server or replaced with PostgreSQL before scaling.
+`src/lib/domain.ts` owns input rules and transitions. `src/lib/db.ts` uses SQLite on a persistent disk for a single application instance. The user explicitly chose a standalone implementation. Native Next.js routes enforce access in handlers; Next does not support Hatchable's custom route export syntax. Replace SQLite with a shared database before scaling to multiple instances.
 
 Orders use server prices, availability checks, transactional idempotency, random private tracking links, unpaid COD state, and persisted status history. Staff APIs use expiring HttpOnly sessions, same-origin mutation checks, and rate limits. The local adapter applies service-wide rate limits because no trusted reverse-proxy contract exists yet. Configure trusted client identification and production identity before launch. Public tracking excludes customer contact/address/notes. Tracking links are bearer secrets; do not share them publicly. Staff list is bounded to the latest 200 orders; production needs pagination and database aggregation.
 
-Do not deploy this local adapter to ephemeral/serverless storage. SQLite needs a persistent disk and single application instance. Review privacy retention, operational backups, production authentication, delivery service area, legal copy and real restaurant photography before launch. Payment gateways, notifications, live delivery, production deployment and QR/domain setup are intentionally pending.
+Do not deploy this adapter to ephemeral/serverless storage. SQLite needs a persistent disk and single application instance. Review privacy retention, operational backups, production authentication, delivery service area, legal copy and real restaurant photography before launch. Payment gateways, notifications, live delivery, actual hosting and QR/domain setup are pending.
 
 Original requirements are in `docs/`. Implementation status is recorded in `docs/DEVELOPMENT.md`.

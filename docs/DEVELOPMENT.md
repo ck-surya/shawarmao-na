@@ -83,3 +83,14 @@ This is a working local MVP, not a production launch. Real menu/prices/photos, b
 - Found the disabled Place order button was caused by `ORDERING_ENABLED=false`, independently of delivery. Enabled ordering in the current server's gitignored `.env.local` while retaining `DELIVERY_ENABLED=false`.
 - Added checkout guidance explaining pickup submission, restaurant confirmation and payment at collection. Clarified in staff Setup and README that pickup needs no delivery integration; new installations still default to ordering disabled.
 - Verified the public ngrok checkout selects pickup, disables delivery and enables Place order. No real restaurant order was submitted during verification. A persistence regression test confirms pickup reaches tracking and staff orders with no delivery fee configured while delivery requests are rejected. All 13 unit/persistence tests, 4 browser scenarios and TypeScript passed.
+
+## Stable deployment branch
+
+- Created `deploy/stable` from `main`; no remote push or hosting deployment was performed.
+- Added a Node 24 standalone Docker image running as an unprivileged user, Compose configuration with a persistent data volume, bounded logs, process restart policy, and a database/photo-storage health check.
+- Production startup validates the staff password, HTTPS origin, persistent paths and feature flags. Optional source-menu bootstrap preserves existing staff edits. Database initialization failures close the failed connection so later requests can retry.
+- JSON request parsing now bounds streamed bytes before buffering the complete body, including requests without Content-Length.
+- Added SQLite online backup plus immutable photo copying, completion markers, and documented restore/rollback procedures. External backup scheduling and storage still need to be configured on the host.
+- Added CI for type checking, unit tests, production builds, browser flows and a disposable-container deployment test. Presentation outputs, local data, backups and secrets are excluded from Git or Docker as applicable.
+- Validation: 16 unit/persistence tests, 4 browser scenarios, TypeScript, formatting, Docker production build, Compose validation and Caddy validation passed. The production container test verified staff login, menu bootstrap, phone upload, pickup submission, duplicate prevention, image optimization, persistence after restart and restoration of a live WAL backup. All tests used isolated data. Production dependency audit reported zero vulnerabilities.
+- The free-hosting guide targets Oracle Cloud Always Free with availability and idle-reclamation limits explained. ARM VM execution, public DNS/TLS, actual host availability and off-server backup delivery have not been verified; container checks ran on local x86-64. See [DEPLOYMENT.md](DEPLOYMENT.md).
