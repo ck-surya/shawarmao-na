@@ -1,5 +1,9 @@
 import type { NextConfig } from "next";
 const config: NextConfig = {
+  output: "standalone",
+  outputFileTracingExcludes: {
+    "/*": ["./data/**/*", "./outputs/**/*", "./.env*"],
+  },
   distDir: process.env.NEXT_DIST_DIR || ".next",
   poweredByHeader: false,
   allowedDevOrigins: (process.env.DEV_ALLOWED_ORIGINS || "")

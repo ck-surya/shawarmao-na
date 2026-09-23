@@ -9,7 +9,7 @@ const MAX_REQUEST_BYTES = MAX_PHOTO_BYTES + 64 * 1024;
 const filenamePattern =
   /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}\.webp$/;
 
-function photoDirectory() {
+export function photoDirectory() {
   return resolve(
     /* turbopackIgnore: true */ process.env.MENU_UPLOAD_DIR ||
       join(

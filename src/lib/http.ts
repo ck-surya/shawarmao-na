@@ -3,6 +3,7 @@ import { timingSafeEqual, randomBytes } from "node:crypto";
 import { ZodError } from "zod";
 import { AppError } from "./domain";
 import { db, hash } from "./db";
+export { readJsonBody as body } from "./request-body";
 export async function requireAdmin() {
   const token = (await cookies()).get("staff_session")?.value;
   if (
@@ -21,15 +22,6 @@ export function checkOrigin(req: Request) {
     `${new URL(req.url).protocol}//${req.headers.get("host")}`;
   if (req.headers.get("origin") !== expected)
     throw new AppError("Request origin not allowed", 403);
-}
-export async function body(req: Request) {
-  const raw = await req.text();
-  if (raw.length > 20000) throw new AppError("Request too large", 413);
-  try {
-    return JSON.parse(raw);
-  } catch {
-    throw new AppError("Invalid JSON");
-  }
 }
 export async function login(password: string) {
   const expected = process.env.ADMIN_PASSWORD;

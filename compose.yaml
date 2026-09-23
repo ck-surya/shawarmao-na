@@ -1,0 +1,36 @@
+name: shawarmao-na
+services:
+  app:
+    build: .
+    image: shawarmao-na:${APP_TAG:-local}
+    restart: unless-stopped
+    init: true
+    env_file:
+      - path: .env.production
+        format: raw
+    environment:
+      DATABASE_PATH: /app/data/restaurant.sqlite
+      MENU_UPLOAD_DIR: /app/data/uploads
+    volumes:
+      - restaurant_data:/app/data
+    ports:
+      - "127.0.0.1:3000:3000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health', {signal: AbortSignal.timeout(4000)}).then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+volumes:
+  restaurant_data:

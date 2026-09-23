@@ -3,6 +3,7 @@ import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
+import { importRestaurantMenu } from "./menu-import";
 import {
   AppError,
   calculateItems,
@@ -22,14 +23,22 @@ export function db() {
       "./data/restaurant.sqlite",
   );
   mkdirSync(dirname(path), { recursive: true });
-  database = new DatabaseSync(path);
-  database.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000;
+  const connection = new DatabaseSync(path);
+  try {
+    connection.exec(`PRAGMA busy_timeout=5000; PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;
     CREATE TABLE IF NOT EXISTS menu_items (id TEXT PRIMARY KEY, data TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS orders (id TEXT PRIMARY KEY, number TEXT UNIQUE NOT NULL, token TEXT UNIQUE NOT NULL, request_key TEXT UNIQUE NOT NULL, request_hash TEXT NOT NULL, data TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS order_status_history (id INTEGER PRIMARY KEY, order_id TEXT NOT NULL REFERENCES orders(id), status TEXT NOT NULL, at TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS sessions (token TEXT PRIMARY KEY, expires INTEGER NOT NULL);
     CREATE TABLE IF NOT EXISTS rate_limits (key TEXT PRIMARY KEY, count INTEGER NOT NULL, expires INTEGER NOT NULL);`);
-  return database;
+    if (process.env.IMPORT_SOURCE_MENU === "true")
+      importRestaurantMenu(connection);
+    database = connection;
+    return database;
+  } catch (error) {
+    connection.close();
+    throw error;
+  }
 }
 export const hash = (s: string) => createHash("sha256").update(s).digest("hex");
 export function getMenu(all = false): MenuItem[] {
