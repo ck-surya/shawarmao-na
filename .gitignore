@@ -10,3 +10,6 @@ test-results/
 .next-e2e/
 
 next-env.d.ts
+
+# Presentation deliverables stay local; do not publish them to GitHub.
+/outputs/
