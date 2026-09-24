@@ -18,6 +18,18 @@ export async function storageRequest(path: string, init: RequestInit = {}) {
     signal: AbortSignal.timeout(15000),
     headers: { apikey: key, Authorization: `Bearer ${key}`, ...init.headers },
   });
+  // Some Storage gateways wrap missing resources in HTTP 400 responses.
+  if (response.status === 400) {
+    const error = await response
+      .clone()
+      .json()
+      .catch(() => null);
+    if (
+      String(error?.statusCode) === "404" &&
+      ["NoSuchBucket", "NoSuchKey", "not_found"].includes(error?.code)
+    )
+      return new Response(null, { status: 404 });
+  }
   if (!response.ok && response.status !== 404)
     throw new Error(`Storage request failed (${response.status})`);
   return response;
