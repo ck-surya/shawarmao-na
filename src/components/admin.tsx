@@ -17,6 +17,7 @@ import {
 } from "@/lib/domain";
 import { request, useStore } from "./store";
 import { MenuPhotoField } from "./menu-photo-field";
+import { preparePhoto } from "@/lib/prepare-photo";
 export function Admin({
   tab = "orders",
 }: {
@@ -371,7 +372,7 @@ function MenuEditor() {
       const hasPhoto = photo instanceof File && photo.size > 0;
       if (hasPhoto) {
         upload.set("item", JSON.stringify(data));
-        upload.set("photo", photo);
+        upload.set("photo", await preparePhoto(photo));
       }
       await request("/api/admin/menu", {
         method: "POST",

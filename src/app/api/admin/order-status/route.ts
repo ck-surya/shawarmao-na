@@ -1,5 +1,5 @@
 import { api, body, checkOrigin, requireAdmin } from "@/lib/http";
-import { updateStatus } from "@/lib/db";
+import { updateStatus } from "@/lib/repository";
 import { states } from "@/lib/domain";
 import { z } from "zod";
 export async function POST(req: Request) {
@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       .object({ id: z.string().uuid(), status: z.enum(states) })
       .strict()
       .parse(await body(req));
-    updateStatus(id, status);
+    await updateStatus(id, status);
     return { ok: true };
   });
 }

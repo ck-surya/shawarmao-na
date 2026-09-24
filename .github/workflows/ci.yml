@@ -9,6 +9,20 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17-bookworm
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: test-only-postgres-password
+          POSTGRES_DB: restaurant_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d restaurant_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -18,6 +32,9 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
+      - run: node --import tsx --test tests/postgres.integration.ts
+        env:
+          TEST_DATABASE_URL: postgres://postgres:test-only-postgres-password@127.0.0.1:5432/restaurant_test
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - name: Browser tests

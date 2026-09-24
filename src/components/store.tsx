@@ -41,7 +41,13 @@ export async function request<T>(
       ...options?.headers,
     },
   });
-  const data = await response.json();
+  const data = await response.json().catch(() => {
+    throw new Error(
+      response.status === 413
+        ? "This photo is too large to upload. Choose a smaller image."
+        : "Unable to connect. Try again.",
+    );
+  });
   if (!response.ok)
     throw new Error(data.error || "Unable to connect. Try again.");
   return data;

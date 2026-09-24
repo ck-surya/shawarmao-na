@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { api, body, checkOrigin, requireAdmin } from "@/lib/http";
-import { getMenu, saveMenu } from "@/lib/db";
+import { getMenu, saveMenu } from "@/lib/repository";
 import { AppError, menuSchema } from "@/lib/domain";
 import { discardPhoto, readPhotoForm, savePhoto } from "@/lib/menu-photos";
 
@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 export async function GET() {
   return api(async () => {
     await requireAdmin();
-    return { items: getMenu(true) };
+    return { items: await getMenu(true) };
   });
 }
 export async function POST(req: Request) {
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     const uploaded = photo ? await savePhoto(photo) : null;
     if (uploaded) item.image = uploaded;
     try {
-      saveMenu(item);
+      await saveMenu(item);
     } catch (error) {
       if (uploaded) await discardPhoto(uploaded);
       throw error;

@@ -3,6 +3,12 @@ import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import sharp from "sharp";
 import { AppError } from "./domain";
+import { isCloud } from "./repository";
+import {
+  writeCloudPhoto,
+  readCloudPhoto,
+  deleteCloudPhoto,
+} from "./cloud-storage";
 
 export const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
 const MAX_REQUEST_BYTES = MAX_PHOTO_BYTES + 64 * 1024;
@@ -78,6 +84,10 @@ export async function savePhoto(file: File) {
     );
   }
   const filename = `${randomUUID()}.webp`;
+  if (isCloud()) {
+    await writeCloudPhoto(filename, output);
+    return `/images/uploads/${filename}`;
+  }
   const directory = photoDirectory();
   await mkdir(directory, { recursive: true });
   await writeFile(join(directory, filename), output, {
@@ -89,6 +99,7 @@ export async function savePhoto(file: File) {
 
 export async function readPhoto(filename: string) {
   if (!filenamePattern.test(filename)) return null;
+  if (isCloud()) return readCloudPhoto(filename);
   try {
     return await readFile(join(photoDirectory(), filename));
   } catch (error) {
@@ -101,5 +112,6 @@ export async function readPhoto(filename: string) {
 export async function discardPhoto(path: string) {
   const filename = path.slice("/images/uploads/".length);
   if (path.startsWith("/images/uploads/") && filenamePattern.test(filename))
-    await unlink(join(photoDirectory(), filename));
+    if (isCloud()) await deleteCloudPhoto(filename);
+    else await unlink(join(photoDirectory(), filename));
 }

@@ -2,16 +2,11 @@ import { cookies } from "next/headers";
 import { timingSafeEqual, randomBytes } from "node:crypto";
 import { ZodError } from "zod";
 import { AppError } from "./domain";
-import { db, hash } from "./db";
+import { hash, hasSession, saveSession, deleteSession } from "./repository";
 export { readJsonBody as body } from "./request-body";
 export async function requireAdmin() {
   const token = (await cookies()).get("staff_session")?.value;
-  if (
-    !token ||
-    !db()
-      .prepare("SELECT token FROM sessions WHERE token=? AND expires>?")
-      .get(hash(token), Date.now())
-  )
+  if (!token || !(await hasSession(hash(token))))
     throw new AppError("Please sign in to continue.", 401);
 }
 export function checkOrigin(req: Request) {
@@ -35,10 +30,7 @@ export async function login(password: string) {
   )
     throw new AppError("Incorrect password", 401);
   const token = randomBytes(32).toString("hex");
-  db().prepare("DELETE FROM sessions WHERE expires < ?").run(Date.now());
-  db()
-    .prepare("INSERT INTO sessions VALUES(?,?)")
-    .run(hash(token), Date.now() + 8 * 60 * 60 * 1000);
+  await saveSession(hash(token), Date.now() + 8 * 60 * 60 * 1000);
   (await cookies()).set("staff_session", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -50,8 +42,7 @@ export async function login(password: string) {
 export async function logout() {
   const jar = await cookies();
   const token = jar.get("staff_session")?.value;
-  if (token)
-    db().prepare("DELETE FROM sessions WHERE token=?").run(hash(token));
+  if (token) await deleteSession(hash(token));
   jar.delete("staff_session");
 }
 export async function api(fn: () => unknown | Promise<unknown>) {

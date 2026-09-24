@@ -6,7 +6,7 @@ import {
   logout,
   requireAdmin,
 } from "@/lib/http";
-import { rateLimit } from "@/lib/db";
+import { rateLimit } from "@/lib/repository";
 import { z } from "zod";
 export async function GET() {
   return api(async () => {
@@ -17,7 +17,7 @@ export async function GET() {
 export async function POST(req: Request) {
   return api(async () => {
     checkOrigin(req);
-    rateLimit("login", 10, 600000);
+    await rateLimit("login", 10, 600000);
     const { password } = z
       .object({ password: z.string().max(200) })
       .parse(await body(req));

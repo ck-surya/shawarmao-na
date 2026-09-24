@@ -1,8 +1,8 @@
-import menuSource from "../content/restaurant-menu.json";
+import { hash, settings } from "./settings";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { createHash, randomBytes, randomUUID } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { importRestaurantMenu } from "./menu-import";
 import {
   AppError,
@@ -40,7 +40,7 @@ export function db() {
     throw error;
   }
 }
-export const hash = (s: string) => createHash("sha256").update(s).digest("hex");
+export { hash, settings } from "./settings";
 export function getMenu(all = false): MenuItem[] {
   return (
     db().prepare("SELECT data FROM menu_items ORDER BY rowid").all() as {
@@ -56,19 +56,6 @@ export function saveMenu(item: MenuItem) {
       "INSERT INTO menu_items(id,data) VALUES (?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data",
     )
     .run(item.id, JSON.stringify(item));
-}
-export function settings() {
-  const fee = process.env.DELIVERY_FEE_PAISE;
-  return {
-    orderingEnabled: process.env.ORDERING_ENABLED === "true",
-    taxRateBps: menuSource.taxRateBps,
-    deliveryEnabled:
-      process.env.DELIVERY_ENABLED === "true" &&
-      !!fee &&
-      /^\d+$/.test(fee) &&
-      Number(fee) <= 100000,
-    deliveryFee: fee && /^\d+$/.test(fee) ? Number(fee) : null,
-  };
 }
 function transaction<T>(fn: () => T): T {
   const d = db();

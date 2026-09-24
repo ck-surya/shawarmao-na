@@ -1,4 +1,5 @@
-import { db } from "@/lib/db";
+import { databaseHealth, isCloud } from "@/lib/repository";
+import { cloudStorageHealth } from "@/lib/cloud-storage";
 import { photoDirectory } from "@/lib/menu-photos";
 import { open, mkdir, unlink } from "node:fs/promises";
 import { join } from "node:path";
@@ -9,23 +10,20 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const connection = db();
-    // A real write transaction checks that SQLite remains writable.
-    connection.exec("BEGIN IMMEDIATE");
-    try {
-      connection.exec("UPDATE sessions SET expires=expires WHERE 0");
-    } finally {
-      connection.exec("ROLLBACK");
-    }
-    const directory = photoDirectory();
-    await mkdir(directory, { recursive: true });
-    const probe = join(directory, `.health-${randomUUID()}`);
-    const file = await open(probe, "wx", 0o600);
-    try {
-      await file.write("ok");
-    } finally {
-      await file.close();
-      await unlink(probe);
+    await databaseHealth();
+    if (isCloud()) {
+      await cloudStorageHealth();
+    } else {
+      const directory = photoDirectory();
+      await mkdir(directory, { recursive: true });
+      const probe = join(directory, `.health-${randomUUID()}`);
+      const file = await open(probe, "wx", 0o600);
+      try {
+        await file.write("ok");
+      } finally {
+        await file.close();
+        await unlink(probe);
+      }
     }
     return Response.json(
       { status: "ok" },
