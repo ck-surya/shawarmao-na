@@ -4,7 +4,7 @@ The app can use either local SQLite/photos or hosted PostgreSQL and Supabase Sto
 
 ## Current status
 
-Deployed on 24 September 2026 at **https://shawarmao-na.netlify.app**, with staff access at **https://shawarmao-na.netlify.app/admin**. The code is on `deploy/stable`; deployment uses a clean local source export through Netlify CLI. No GitHub remote or continuous deployment is configured. Presentation files remain local.
+Deployed on 24 September 2026 at **https://shawarmao-na.netlify.app**, with staff access at **https://shawarmao-na.netlify.app/admin**. Source is published at **https://github.com/ck-surya/shawarmao-na** on `main` and `deploy/stable`; deployment uses a clean local source export through Netlify CLI. GitHub Actions validates source changes; Netlify continuous deployment is not configured. Presentation files remain local.
 
 The restaurant Supabase project is `bongxxvdlrlfmzyuqqgq` (Singapore, Free). Netlify project ID: `4ccddad3-f066-499c-a732-edb5c0bce618`. Pickup ordering is enabled; delivery is disabled. Orders open at noon and close at 5 AM in Asia/Kolkata. The existing staff password is configured privately in hosting settings.
 

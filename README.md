@@ -1,6 +1,18 @@
 # Shawarmao Na
 
-Standalone implementation of the supplied direct-ordering brief. Node 24, Next.js App Router, React, TypeScript, and PostgreSQL or SQLite persistence. The user chose to skip the existing Hatchable implementation. This is a standalone application and does not modify that deployment.
+A full-stack restaurant ordering application built with Next.js App Router, React, TypeScript, and PostgreSQL, with SQLite support for local development. Runs on Node.js 24.
+
+[Live website](https://shawarmao-na.netlify.app) · [GitHub repository](https://github.com/ck-surya/shawarmao-na)
+
+## Features
+
+- Responsive storefront with a 23-item menu, category filters, and a persistent shopping bag.
+- Guest pickup checkout with server-validated prices, GST calculation, duplicate-order protection, and private order tracking.
+- Protected staff dashboard for menu availability, prices, photo uploads, and order status updates.
+- Supabase PostgreSQL and private photo storage, with image validation and WebP optimization.
+- Automated unit, persistence, PostgreSQL integration, and Playwright browser tests, plus GitHub Actions validation.
+
+This standalone application implements the supplied direct-ordering brief. Original requirements and implementation notes are in `docs/`.
 
 The `deploy/stable` branch supports free Netlify hosting with Supabase PostgreSQL and private photo storage. Follow [the Netlify deployment guide](docs/NETLIFY.md). [Docker deployment](docs/DEPLOYMENT.md) remains available for a server with persistent storage. Presentation files stay local and are excluded from deployments.
 
